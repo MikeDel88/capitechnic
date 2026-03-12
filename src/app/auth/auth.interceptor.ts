@@ -1,34 +1,23 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpInterceptor,
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpErrorResponse
-} from '@angular/common/http';
+import { HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
 import { Observable, throwError, catchError } from 'rxjs';
+import { inject } from '@angular/core';
 import { ApiService } from '../service/api.service';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
+export const authInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> => {
+  const apiService = inject(ApiService); // injecter ApiService
+  const token = apiService.getToken();
 
-  constructor(private apiService: ApiService) {}
+  const authReq = req.clone({
+    setHeaders: {
+      'AUTH_TOKEN': token,
+      'Content-Type': 'application/json'
+    }
+  });
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.apiService.getToken();
-
-    const authReq = req.clone({
-      setHeaders: {
-        'AUTH_TOKEN': token,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    return next.handle(authReq).pipe(
-      catchError((err: HttpErrorResponse) => {
-        const message = err.error?.error || err.message || 'Erreur inconnue';
-        return throwError(() => new Error(message));
-      })
-    );
-  }
-}
+  return next.handle(authReq).pipe(
+    catchError((err: HttpErrorResponse) => {
+      const message = err.error?.error || err.message || 'Erreur inconnue';
+      return throwError(() => new Error(message));
+    })
+  );
+};

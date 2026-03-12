@@ -13,10 +13,7 @@ export class TaskService {
   ) { }
 
   getTasks(): Observable<Task[]> {
-    let headers = new HttpHeaders({
-      'AUTH_TOKEN': 'token123',
-    });
-    return this.http.get(`${this.apiService.baseUrl}/items`, { headers }).pipe(
+    return this.http.get(`${this.apiService.baseUrl}/items`).pipe(
       map((datas) => {
         return Object.entries(datas).map(([key, value]: [string, any]) => ({
                     id: +key,
@@ -30,11 +27,7 @@ export class TaskService {
   }
 
   updateTask(task: Task): Observable<Task> {
-    let headers = new HttpHeaders({
-      'AUTH_TOKEN': 'token123',
-    });
-    return this.http.put<Task>(`${this.apiService.baseUrl}/api/items/${task.id}`, task, { headers }).pipe(
-      
+    return this.http.put<Task>(`${this.apiService.baseUrl}/api/items/${task.id}`, task).pipe(
       map((taskFromApi) => {
         console.log("updated", taskFromApi)
         return {
