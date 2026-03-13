@@ -13,8 +13,8 @@ export class TaskService {
   ) { }
 
   getTasks(): Observable<Task[]> {
-    return this.http.get(`${this.apiService.baseUrl}/items`).pipe(
-      map((datas) => {
+    return this.http.get<Task[]>(`${this.apiService.baseUrl}/items`).pipe(
+      map((datas: Task[]) => {
         return Object.entries(datas).map(([key, value]: [string, any]) => ({
                     id: +key,
                     title: value?.title || '',
@@ -28,7 +28,7 @@ export class TaskService {
 
   updateTask(task: Task): Observable<Task> {
     return this.http.put<Task>(`${this.apiService.baseUrl}/${task.id}/items/${task.id}`, task).pipe(
-      map((taskFromApi) => {
+      map((taskFromApi: Task) => {
         console.log("updated", taskFromApi)
         return {
         ...taskFromApi,
