@@ -27,7 +27,7 @@ export class TaskService {
   }
 
   updateTask(task: Task): Observable<Task> {
-    return this.http.put<Task>(`${this.apiService.baseUrl}/api/items/${task.id}`, task).pipe(
+    return this.http.put<Task>(`${this.apiService.baseUrl}/${task.id}/items/${task.id}`, task).pipe(
       map((taskFromApi) => {
         console.log("updated", taskFromApi)
         return {
